@@ -16,7 +16,8 @@ let handleLogin = async (req, res) => {
   return res.status(200).json({
     messenger: dataUsers.errmess,
     rrerCode: dataUsers.errCode,
-    dataUsers,
+    // nếu có data users thì sẽ trả ra data user còn không thì sẽ trả ra Ob rỗng
+    user: dataUsers.userLogin ? dataUsers.userLogin : {},
   });
 };
 

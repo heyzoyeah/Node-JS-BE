@@ -11,15 +11,21 @@ let handleLogin = (email, password) => {
       if (emailExist) {
         // check lại email nếu cùng lúc đó ai xoá bản ghi thì sẽ k lỗi
         let userLogin = await db.User.findOne({
+          attributes: ["id", "email", "password"], // define columns that you want to show
           where: { email: email },
+          raw: true,
         });
 
         if (userLogin) {
-          //so sánh password
-          let check = await bcrypt.compareSync(password, userLogin.password);
-          if (check) {
+          //compare password
+          let checkpassword = await bcrypt.compareSync(
+            password,
+            userLogin.password
+          );
+          if (checkpassword) {
             userData.errCode = 2;
             userData.errmess = "password okay";
+            delete userLogin.password; //delete password to view
             userData.userLogin = userLogin;
           } else {
             userData.errCode = 3;
@@ -27,14 +33,13 @@ let handleLogin = (email, password) => {
           }
         } else {
           userData.errCode = 2;
-          userData.errmess = "email này k tồn tại";
+          userData.errmess = "email not found";
         }
       } else {
-        //nếu k có thì trả ra
         userData.errCode = 1;
-        userData.errmess = "email này k tồn tại";
+        userData.errmess = "email not exist";
       }
-      // trả errCode, errmess code
+      // errCode, errmess
       resole(userData);
     } catch (e) {
       reject(e);
