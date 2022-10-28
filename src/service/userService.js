@@ -23,7 +23,7 @@ let handleLogin = (email, password) => {
             userLogin.password
           );
           if (checkpassword) {
-            userData.errCode = 2;
+            userData.errCode = 0;
             userData.errmess = "password okay";
             delete userLogin.password; //delete password to view
             userData.userLogin = userLogin;
