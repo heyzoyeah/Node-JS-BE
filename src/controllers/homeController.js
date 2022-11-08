@@ -15,7 +15,6 @@ let aboutController = (req, res) => {
 let postCRUD = async (req, res) => {
   let messenger = await CRUDservice.createNewUser(req.body);
   console.log(messenger);
-  console.log(req.body);
   return res.send("post form sever");
 };
 

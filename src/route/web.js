@@ -19,9 +19,7 @@ let initWebRoutes = (app) => {
 
   router.post("/api/login", usersController.handleLogin);
 
-  // router.get('/index', (req, res) => {
-  //     return res.send('helo index')
-  // });
+  router.get("/api/get-all-users", usersController.handleGetAllUser);
 
   return app.use("/", router);
 };

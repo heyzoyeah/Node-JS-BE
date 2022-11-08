@@ -11,16 +11,36 @@ let handleLogin = async (req, res) => {
     });
   }
   let dataUsers = await userService.handleLogin(email, password);
-  console.log(dataUsers);
+  //   console.log(dataUsers);
 
   return res.status(200).json({
     messenger: dataUsers.errmess,
-    rrerCode: dataUsers.errCode,
+    errCode: dataUsers.errCode,
     // nếu có data users thì sẽ trả ra data user còn không thì sẽ trả ra Ob rỗng
     user: dataUsers.userLogin ? dataUsers.userLogin : {},
   });
 };
 
+let handleGetAllUser = async (req, res) => {
+  let id = req.query.id;
+  //validate from server
+  if (!id) {
+    return res.status(200).json({
+      messenger: "missing user",
+      errCode: 1,
+    });
+  }
+  if (id) {
+    let users = await userService.handleGetAll(id);
+    return res.status(200).json({
+      messenger: "found users",
+      errCode: 0,
+      users,
+    });
+  }
+};
+
 module.exports = {
   handleLogin: handleLogin,
+  handleGetAllUser: handleGetAllUser,
 };

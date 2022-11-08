@@ -21,7 +21,7 @@ let createNewUser = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let hashPaswordFromBcryt = await hashUserPassword(data.password);
-      await db.User.create({
+      let creatUser = await db.User.create({
         email: data.email,
         password: hashPaswordFromBcryt,
         firstName: data.firstName,
@@ -108,6 +108,7 @@ let deleteUserById = (userId) => {
       let user = await db.User.findOne({
         where: { id: userId },
       });
+
       if (user) {
         //destroy dữ liệu
         await user.destroy();

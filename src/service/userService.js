@@ -33,11 +33,11 @@ let handleLogin = (email, password) => {
           }
         } else {
           userData.errCode = 2;
-          userData.errmess = "email not found";
+          userData.errmess = "email không tồn tại";
         }
       } else {
         userData.errCode = 1;
-        userData.errmess = "email not exist";
+        userData.errmess = "email không tồn tại";
       }
       // errCode, errmess
       resole(userData);
@@ -67,6 +67,35 @@ let CheckUserEmail = (checkmail) => {
   });
 };
 
+let handleGetAll = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let users = "";
+      // get all user
+      if (userId === "ALL") {
+        users = await db.User.findAll({
+          attributes: {
+            exclude: ["password"], // define columns that you don't want
+          },
+        });
+      }
+      // get one user
+      if (userId && userId !== "ALL") {
+        users = await db.User.findOne({
+          where: { id: userId },
+          attributes: {
+            exclude: ["password"], // define columns that you don't want
+          },
+        });
+      }
+      resolve(users);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   handleLogin: handleLogin,
+  handleGetAll: handleGetAll,
 };
