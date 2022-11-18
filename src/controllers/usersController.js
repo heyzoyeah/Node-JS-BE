@@ -39,8 +39,48 @@ let handleGetAllUser = async (req, res) => {
     });
   }
 };
+let handleCreateUser = async (req, res) => {
+  let message = await userService.createNewUser(req.body);
+
+  console.log(message);
+  return res.status(200).json({ message });
+};
+
+let handleDeleteUser = async (req, res) => {
+  let id = req.body.id;
+
+  if (!id) {
+    return res.status(200).json({
+      errcode: 3,
+      message: "not found user",
+    });
+  }
+
+  if (id) {
+    let message = await userService.handleDeleteUser(id);
+    return res.status(200).json({ message });
+  }
+};
+
+let handleUpdateUser = async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  if (!data) {
+    return res.status(200).json({
+      errcode: 3,
+      message: "not found user",
+    });
+  }
+  if (data) {
+    let message = await userService.handleUpdateUser(data);
+    return res.status(200).json({ message });
+  }
+};
 
 module.exports = {
   handleLogin: handleLogin,
   handleGetAllUser: handleGetAllUser,
+  handleCreateUser: handleCreateUser,
+  handleDeleteUser: handleDeleteUser,
+  handleUpdateUser: handleUpdateUser,
 };

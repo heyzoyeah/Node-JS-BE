@@ -1,6 +1,20 @@
 import db from "../models/index";
 import bcrypt from "bcryptjs";
 
+const salt = bcrypt.genSaltSync(10);
+
+// hash password
+let hashUserPassword = (password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let hashPasword = await bcrypt.hashSync(password, salt);
+      resolve(hashPasword);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 let handleLogin = (email, password) => {
   return new Promise(async (resole, reject) => {
     try {
@@ -94,8 +108,122 @@ let handleGetAll = (userId) => {
     }
   });
 };
+let checkDataUser = (checkUser) => {
+  if (checkUser.password === null || checkUser.password === "") {
+    return true;
+  } else {
+    return false;
+  }
+};
+// create user into DB and hash password
+let createNewUser = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //check email
+      let check = await CheckUserEmail(data.email);
+      let checkDATA = checkDataUser(data);
+
+      if (check === true) {
+        resolve({
+          errCode: 1,
+          message: "Email đã tồn tại",
+        });
+      }
+
+      if (checkDATA === true) {
+        resolve({
+          errCode: 2,
+          message: "nhập k đủ ",
+        });
+      }
+
+      if (check || checkDATA === false) {
+        let hashPaswordFromBcryt = await hashUserPassword(data.password);
+        let creatUser = await db.User.create({
+          email: data.email,
+          password: hashPaswordFromBcryt,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          address: data.address,
+          phonenumber: data.phonenumber,
+          gender: data.gender === "1" ? true : false,
+          roleId: data.roleId,
+        });
+        resolve({
+          errCode: 0,
+          message: "tạo thành công",
+
+          creatUser,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+let handleDeleteUser = async (idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let foundUser = await db.User.findOne({
+        where: { id: idUser },
+      });
+
+      if (!foundUser) {
+        resolve({
+          errCode: 4,
+          message: "user id not exist",
+        });
+      }
+
+      await foundUser.destroy();
+
+      resolve({
+        errCode: 0,
+        message: "Delete user done",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+let handleUpdateUser = (idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let foundUser = await db.User.findOne({
+        where: { id: idUser.id },
+      });
+      if (!foundUser) {
+        resolve({
+          errCode: 4,
+          message: "user id not exist",
+        });
+      }
+
+      if (foundUser) {
+        (foundUser.email = idUser.email),
+          (foundUser.firstName = idUser.firstName),
+          (foundUser.lastName = idUser.lastName),
+          (foundUser.address = idUser.address),
+          (foundUser.phonenumber = idUser.phonenumber);
+        await foundUser.save();
+        resolve({
+          errCode: 0,
+          message: "Edit user done",
+          foundUser,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 module.exports = {
   handleLogin: handleLogin,
   handleGetAll: handleGetAll,
+  createNewUser: createNewUser,
+  handleDeleteUser: handleDeleteUser,
+  handleUpdateUser: handleUpdateUser,
 };
