@@ -108,8 +108,14 @@ let handleGetAll = (userId) => {
     }
   });
 };
+
 let checkDataUser = (checkUser) => {
-  if (checkUser.password === null || checkUser.password === "") {
+  if (
+    checkUser.email === null ||
+    checkUser.email === "" ||
+    checkUser.password === null ||
+    checkUser.password === ""
+  ) {
     return true;
   } else {
     return false;
@@ -123,22 +129,21 @@ let createNewUser = async (data) => {
       let check = await CheckUserEmail(data.email);
       let checkDATA = checkDataUser(data);
 
-      if (check === true) {
-        resolve({
-          errCode: 1,
-          message: "Email đã tồn tại",
-        });
-      }
-
       if (checkDATA === true) {
         resolve({
           errCode: 2,
-          message: "nhập k đủ ",
+          errMessage: "nhập k đủ ",
         });
       }
 
-      if (check || checkDATA === false) {
+      if (check === true) {
+        resolve({
+          errCode: 1,
+          errMessage: "Email đã tồn tại",
+        });
+      } else {
         let hashPaswordFromBcryt = await hashUserPassword(data.password);
+
         let creatUser = await db.User.create({
           email: data.email,
           password: hashPaswordFromBcryt,
@@ -151,7 +156,7 @@ let createNewUser = async (data) => {
         });
         resolve({
           errCode: 0,
-          message: "tạo thành công",
+          errMessage: "tạo thành công",
 
           creatUser,
         });
@@ -161,7 +166,7 @@ let createNewUser = async (data) => {
     }
   });
 };
-
+//handleDeleteUser
 let handleDeleteUser = async (idUser) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -194,6 +199,7 @@ let handleUpdateUser = (idUser) => {
       let foundUser = await db.User.findOne({
         where: { id: idUser.id },
       });
+
       if (!foundUser) {
         resolve({
           errCode: 4,

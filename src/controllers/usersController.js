@@ -20,7 +20,7 @@ let handleLogin = async (req, res) => {
     user: dataUsers.userLogin ? dataUsers.userLogin : {},
   });
 };
-
+//handleGetAllUser
 let handleGetAllUser = async (req, res) => {
   let id = req.query.id;
   //validate from server
@@ -39,6 +39,7 @@ let handleGetAllUser = async (req, res) => {
     });
   }
 };
+//handleCreateUser
 let handleCreateUser = async (req, res) => {
   let message = await userService.createNewUser(req.body);
 
@@ -46,6 +47,7 @@ let handleCreateUser = async (req, res) => {
   return res.status(200).json({ message });
 };
 
+//handleDeleteUser
 let handleDeleteUser = async (req, res) => {
   let id = req.body.id;
 
@@ -61,7 +63,7 @@ let handleDeleteUser = async (req, res) => {
     return res.status(200).json({ message });
   }
 };
-
+//handleUpdateUser
 let handleUpdateUser = async (req, res) => {
   let data = req.body;
   console.log(data);
